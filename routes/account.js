@@ -130,20 +130,15 @@ router.put('/', (req, res) => {
 })
 
 router.post('/transaction', (req, res) => {
+  let mov = req.body;
   
-  let transaction = req.body;
-  
-  fs.readFile(fileName, 'utf8', (err, data) => {
+  fs.readFile(global.fileName, 'utf8', (err, data) => {
     try {
       if(err) throw err;
 
       let json = JSON.parse(data)
-      let index = json.accounts.findIndex(account => account.id === transation.id)
-      let saldo = json.accounts[index].balance 
-      let movimentation = transaction.value
-
-      if(saldo >= movimentation) {
-        saldo += movimentation
+      let index = json.accounts.findIndex(account => account.id === mov.id)
+      json.accounts[index].balance += mov.value
 
         fs.writeFile(fileName, JSON.stringify(json), err => {
           if (err) { 
@@ -152,17 +147,12 @@ router.post('/transaction', (req, res) => {
             res.end();
           }
         });
-        res.send(`${json.accounts.nome} seu saldo agora é ${json.accounts.balance}`)
-      }else{
-        res.send(`${json.accounts.nome} saldo insuficiênte, saldo atual é ${json.accounts.balance}`)
-
-      }
       
     } catch (err) {
       res.status(400).send({error: err.message})
     }
   });
-  
+
 })
 
 export default router;
